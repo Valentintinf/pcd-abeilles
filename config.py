@@ -2,12 +2,11 @@ import os
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-class Config:
-    SECRET_KEY = os.environ.get("SECRET_KEY") or 'tu-ne-sauras-jamais'
-    UPLOAD_FOLDER = os.path.join(basedir, "app", "static", "uploads")
-    DEBUG = True  # Change to False in production
 
-    @staticmethod
-    def init_app(app):
-        if not os.path.exists(Config.UPLOAD_FOLDER):
-            os.makedirs(Config.UPLOAD_FOLDER)
+class Config(object):
+    SECRET_KEY = os.environ.get("SECRET_KEY") or 'tu-ne-sauras-jamais'
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
+        'sqlite:///' + os.path.join(basedir, 'app.db')
+    # SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
+    #     f"mysql://root:@localhost:3306/first_flask_app"
+    UPLOAD_FOLDER = os.path.join(basedir, "app", "static", "uploads")

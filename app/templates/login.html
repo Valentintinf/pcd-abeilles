@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <section class="container mt-5">
+        <div class="d-flex flex-column justify-content-center">
+            <h1 class="text-center">Connexion</h1>
+            <form action="" method="POST" novalidate>
+                {{ form.hidden_tag() }}
+                <div class="mb-3">
+                    {{ form.username.label(class_="form-label") }}
+                    {{ form.username(class_="form-control") }}
+                    {% for error in form.username.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="mb-3">
+                    {{ form.password.label(class_="form-label") }}
+                    {{ form.password(class_="form-control") }}
+                    {% for error in form.password.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="d-grid">
+                    <button class="btn btn-success">
+                        Se connecter
+                    </button>
+                </div>
+            </form>
+            <p class="text-center mt-3">Nouvel utilisateur ? <a href="{{ url_for('register') }}">Inscrivez-vous ici !</a></p>
+        </div>
+    </section>
+{% endblock %}
