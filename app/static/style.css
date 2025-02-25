@@ -1,0 +1,16 @@
+html, body {
+    height: 100%;
+}
+.content-wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+.content {
+    flex: 1;
+}
+footer {
+    background: #f8f9fa;
+    padding: 10px 0;
+    text-align: center;
+}

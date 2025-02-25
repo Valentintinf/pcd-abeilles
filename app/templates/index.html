@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}Accueil - Détection de Varroa{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h2 class="text-center">Téléverser une image pour détection</h2>
+        <form action="/" method="post" enctype="multipart/form-data" class="text-center mt-4">
+            <input type="file" name="file" class="form-control mb-3" required>
+            <button type="submit" class="btn btn-primary">Analyser l'image</button>
+        </form>
+    </div>
+{% endblock %}
