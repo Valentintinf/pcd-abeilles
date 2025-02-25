@@ -5,6 +5,8 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 class Config:
     SECRET_KEY = os.environ.get("SECRET_KEY") or 'tu-ne-sauras-jamais'
     UPLOAD_FOLDER = os.path.join(basedir, "app", "static", "uploads")
+    SQLALCHEMY_DATABASE_URI = f"sqlite:///{os.path.join(basedir, 'app', 'database.db')}"
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
     DEBUG = True  # Change to False in production
 
     @staticmethod

@@ -23,5 +23,19 @@
             &copy; 2025 Détection de Varroa
         </footer>
     </div>
+    <nav class="navbar navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">Détection de Varroa</a>
+            <div>
+                {% if current_user.is_authenticated %}
+                    <span class="text-white me-3">Bonjour, {{ current_user.username }}!</span>
+                    <a class="btn btn-danger" href="{{ url_for('logout') }}">Déconnexion</a>
+                {% else %}
+                    <a class="btn btn-light me-2" href="{{ url_for('login') }}">Connexion</a>
+                    <a class="btn btn-primary" href="{{ url_for('register') }}">Inscription</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>    
 </body>
 </html>

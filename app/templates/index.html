@@ -4,10 +4,20 @@
 
 {% block content %}
     <div class="container mt-5">
-        <h2 class="text-center">Téléverser une image pour détection</h2>
+        <h2 class="text-center">Upload une image pour détection</h2>
         <form action="/" method="post" enctype="multipart/form-data" class="text-center mt-4">
             <input type="file" name="file" class="form-control mb-3" required>
             <button type="submit" class="btn btn-primary">Analyser l'image</button>
         </form>
+        
+        <h3 class="mt-5">Historique</h3>
+        <ul class="list-group mt-3">
+            {% for image in images %}
+                <li class="list-group-item">
+                    <img src="{{ url_for('static', filename='uploads/' + image.filename) }}" width="100">
+                    {{ image.filename }} - Upload le {{ image.uploaded_at.strftime('%Y-%m-%d %H:%M:%S') }}
+                </li>
+            {% endfor %}
+        </ul>
     </div>
 {% endblock %}
