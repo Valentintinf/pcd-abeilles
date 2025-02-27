@@ -9,5 +9,9 @@
             <input type="file" name="file" class="form-control mb-3" required>
             <button type="submit" class="btn btn-primary">Analyser l'image</button>
         </form>
+        <a href="{{ url_for('logout') }}" class="nav-link text-danger">
+            <i class="fas fa-sign-out-alt me-2"></i>
+            <strong>Déconnexion</strong>
+        </a>        
     </div>
 {% endblock %}
