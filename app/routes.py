@@ -9,6 +9,12 @@ from app.models import User
 from app.utils import allowed_file
 from app.model_handler import predict_image
 
+
+@app.route('/', methods=['GET', 'POST'])
+def root():
+    return redirect(url_for('index'))
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -56,7 +62,6 @@ def logout():
 @app.route('/index', methods=['GET', 'POST'])
 @login_required
 def index():
-    print("📩 Route hit:", request.method)
     if request.method == 'POST':
         print("🔄 Form submitted")
 

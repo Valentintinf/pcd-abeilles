@@ -4,23 +4,25 @@
 
 {% block content %}
 <div class="container mt-5 text-center">
-    <h2>Résultat de la détection</h2>
+    <div class="p-4 shadow rounded bg-white">
+        <h2 class="mb-4">Résultat de la détection</h2>
 
-    <!-- Display uploaded image -->
-    <img src="{{ url_for('static', filename='uploads/' ~ filename) }}" class="img-fluid mt-3" alt="Image analysée">
-    <p>Image path: {{ url_for('static', filename='uploads/' ~ filename) }}</p>
+        <!-- Display uploaded image -->
+        <img src="{{ url_for('static', filename='uploads/' ~ filename) }}" class="img-fluid mt-3" alt="Image analysée">
+        <p class="text-muted mt-2">Image : <strong>{{ filename }}</strong></p>
 
-    <!-- Display prediction result -->
-    {% if result %}
-    <div class="mt-4">
-        <h4>Classe prédite : {{ result.class }}</h4>
-        <p>Confiance du modèle : {{ (result.confidence * 100) | round(2) }}%</p>
-    </div>
-    {% endif %}
+        <!-- Display prediction result -->
+        {% if result %}
+        <div class="mt-4">
+            <h4>Classe prédite : <strong>{{ result.class }}</strong></h4>
+            <p>Confiance du modèle : <strong>{{ (result.confidence * 100) | round(2) }}%</strong></p>
+        </div>
+        {% endif %}
 
-    <!-- Back to upload -->
-    <div class="mt-4">
-        <a href="{{ url_for('index') }}" class="btn btn-secondary">Analyser une autre image</a>
+        <!-- Back to upload -->
+        <div class="mt-4">
+            <a href="{{ url_for('index') }}" class="btn btn-primary">Analyser une autre image</a>
+        </div>
     </div>
 </div>
 {% endblock %}

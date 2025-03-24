@@ -3,8 +3,8 @@
 {% block content %}
     <section class="container mt-5">
         <div class="d-flex flex-column justify-content-center">
-            <h1 class="text-center">Connexion</h1>
-            <form action="" method="POST" novalidate>
+            <h1 class="text-center mb-4">Connexion</h1>
+            <form action="" method="POST" novalidate class="p-4 shadow rounded bg-white">
                 {{ form.hidden_tag() }}
                 <div class="mb-3">
                     {{ form.username.label(class_="form-label") }}

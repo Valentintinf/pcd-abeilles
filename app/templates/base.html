@@ -10,12 +10,19 @@
 </head>
 <body>
     <div class="content-wrapper">
-        <nav class="navbar navbar-dark bg-dark">
+        <nav class="navbar">
             <div class="container d-flex justify-content-between align-items-center">
                 <a class="navbar-brand" href="/">
                     🐝 Détection de Varroa
                 </a>
-                {% block navbar_extra %}{% endblock %}
+                {% block navbar_extra %}
+                {% if current_user.is_authenticated %}
+                    <div class="d-flex align-items-center">
+                        <span class="me-3">🌼{{ current_user.username }}</span>
+                        <a href="{{ url_for('logout') }}" class="btn btn-secondary btn-sm">Déconnexion</a>
+                    </div>
+                {% endif %}
+                {% endblock %}
             </div>
         </nav>
 
