@@ -1,16 +1,74 @@
 html, body {
     height: 100%;
+    margin: 0;
+    font-family: 'Fredoka', sans-serif;
+    background: url('https://www.transparenttextures.com/patterns/hexellence.png');
+    background-color: #FFF8DC;
+    color: #212121;
 }
+
 .content-wrapper {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
 }
+
 .content {
     flex: 1;
 }
+
 footer {
-    background: #f8f9fa;
+    background: #FFD700;
+    color: #212121;
     padding: 10px 0;
     text-align: center;
+    font-weight: bold;
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+}
+
+.navbar {
+    background-color: #212121 !important;
+    border-bottom: 3px solid #FFD700;
+}
+
+.btn-primary, .btn-success, .btn-secondary {
+    background-color: #FFD700;
+    border-color: #FFD700;
+    color: #212121;
+    font-weight: bold;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover, .btn-success:hover, .btn-secondary:hover {
+    background-color: #FFC107;
+    border-color: #FFC107;
+    color: #000;
+}
+
+input.form-control {
+    border-radius: 10px;
+}
+
+h1, h2, h4 {
+    color: #212121;
+    font-weight: 700;
+}
+
+a.nav-link {
+    font-weight: bold;
+    color: #d32f2f;
+}
+
+a.nav-link:hover {
+    color: #b71c1c;
+}
+
+img {
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.form-label {
+    font-weight: bold;
 }

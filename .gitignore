@@ -1,6 +1,5 @@
 venv
 .vscode
-copy.py
 __pycache__
 app/__pycache__
-model.ipynb
+app/static/uploads

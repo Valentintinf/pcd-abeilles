@@ -1,30 +1,21 @@
-import io
-import os
-
-import pandas as pd
-import sqlalchemy as sa
-from flask import render_template, flash, redirect, url_for, request
-from flask_login import current_user, login_user
-from flask_login import logout_user, login_required
-from sqlalchemy import desc
+from flask import render_template, flash, redirect, url_for, request, jsonify
+from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.utils import secure_filename
-
+import os
+import sqlalchemy as sa
 from app import app, db
 from app.forms import LoginForm, RegistrationForm
 from app.models import User
 from app.utils import allowed_file
-# import cv2
-
+from app.model_handler import predict_image
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     form = LoginForm()
-    print(form.password)
     if form.validate_on_submit():
-        user = db.session.scalar(
-            sa.select(User).where(User.username == form.username.data))
+        user = db.session.scalar(sa.select(User).where(User.username == form.username.data))
         if user is None or not user.check_password(form.password.data):
             flash('error: Invalid username or password')
             return redirect(url_for('login'))
@@ -33,27 +24,21 @@ def login():
         return redirect(url_for('index'))
     return render_template('login.html', title='Sign In', form=form)
 
-
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     form = RegistrationForm()
     if form.validate_on_submit():
-        get_user = db.session.scalar(
-            sa.select(User).where(User.username == form.username.data))
+        get_user = db.session.scalar(sa.select(User).where(User.username == form.username.data))
         if get_user is None:
-
             user = User(
                 username=form.username.data,
                 email=form.email.data,
-                )
-
+            )
             user.set_password(form.password.data)
-
             db.session.add(user)
             db.session.commit()
-
             login_user(user)
             flash('success: Congratulations, you are now a registered!')
             return redirect(url_for('index'))
@@ -68,25 +53,45 @@ def logout():
     flash('success: You are now logged out!')
     return redirect(url_for("login"))
 
-
 @app.route('/index', methods=['GET', 'POST'])
 @login_required
 def index():
+    print("📩 Route hit:", request.method)
     if request.method == 'POST':
+        print("🔄 Form submitted")
+
         if 'file' not in request.files:
-            return 'Aucun fichier sélectionné'
+            print("❌ No file in request.files")
+            flash('error: Aucun fichier sélectionné')
+            return redirect(url_for('index'))
+
         file = request.files['file']
+        print("📎 Filename received:", file.filename)
+
         if file.filename == '':
-            return 'Aucun fichier sélectionné'
+            print("❌ Empty filename")
+            flash('error: Aucun fichier sélectionné')
+            return redirect(url_for('index'))
+
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
+            print("✅ Allowed file:", filename)
+
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+            print("📁 Will save to:", filepath)
+
             file.save(filepath)
-            
-            # Appel du modèle pour la détection
-            # output_path = os.path.join("static", filename)
-            # annotated_image = your_model_script.detect_varroa(filepath)  # Fonction à implémenter dans ton fichier modèle
-            # cv2.imwrite(output_path, annotated_image)
-                
-            return render_template('result.html', filename=filename)
+            print("💾 File saved!")
+
+            result = predict_image(filepath)
+            print("🧠 Prediction:", result)
+
+            return render_template('result.html', filename=filename, result=result)
+
+        print("❌ File not allowed:", file.filename)
+        flash("error: Format non autorisé")
+        return redirect(url_for('index'))
+
+
     return render_template('index.html')

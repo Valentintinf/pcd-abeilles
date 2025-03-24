@@ -4,14 +4,21 @@
 
 {% block content %}
     <div class="container mt-5">
-        <h2 class="text-center">Téléverser une image pour détection</h2>
-        <form action="/" method="post" enctype="multipart/form-data" class="text-center mt-4">
-            <input type="file" name="file" class="form-control mb-3" required>
+        <h2 class="text-center mb-4">Téléverser une image pour détection</h2>
+
+        <form action="{{ url_for('index') }}" method="post" enctype="multipart/form-data" class="text-center mt-5 p-4 shadow rounded bg-white">
+            <label for="file" class="form-label fw-bold">Choisissez une image à analyser</label>
+            <input type="file" id="file" name="file" class="form-control mb-3" required>
             <button type="submit" class="btn btn-primary">Analyser l'image</button>
-        </form>
-        <a href="{{ url_for('logout') }}" class="nav-link text-danger">
-            <i class="fas fa-sign-out-alt me-2"></i>
-            <strong>Déconnexion</strong>
-        </a>        
+        </form>        
     </div>
+{% endblock %}
+
+{% block navbar_extra %}
+    {% if current_user.is_authenticated %}
+        <div class="d-flex align-items-center">
+            <span class="text-white me-3">👤 {{ current_user.username }}</span>
+            <a href="{{ url_for('logout') }}" class="btn btn-secondary btn-sm">Déconnexion</a>
+        </div>
+    {% endif %}
 {% endblock %}
