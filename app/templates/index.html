@@ -4,21 +4,26 @@
 
 {% block content %}
     <div class="container mt-5">
-        <h2 class="text-center mb-4">Téléverser une image pour détection</h2>
+        <h2 class="text-center mb-4">🐝 Téléverser une image pour détection</h2>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if 'error' in category else 'success' }} text-center">
+                        {% if 'error' in category and 'Format non autorisé' in message %}
+                            <strong>Format non autorisé :</strong> Veuillez téléverser une image PNG, JPG, JPEG ou GIF.
+                        {% else %}
+                            {{ message.split(':', 1)[1] if ':' in message else message }}
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
 
         <form action="{{ url_for('index') }}" method="post" enctype="multipart/form-data" class="text-center mt-5 p-4 shadow rounded bg-white">
             <label for="file" class="form-label fw-bold">Choisissez une image à analyser</label>
             <input type="file" id="file" name="file" class="form-control mb-3" required>
-            <button type="submit" class="btn btn-primary">Analyser l'image</button>
+            <button type="submit" class="btn btn-primary">Analyser l'image 🧐</button>
         </form>        
     </div>
-{% endblock %}
-
-{% block navbar_extra %}
-    {% if current_user.is_authenticated %}
-        <div class="d-flex align-items-center">
-            <span class="text-white me-3">👤 {{ current_user.username }}</span>
-            <a href="{{ url_for('logout') }}" class="btn btn-secondary btn-sm">Déconnexion</a>
-        </div>
-    {% endif %}
 {% endblock %}

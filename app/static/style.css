@@ -2,8 +2,8 @@ html, body {
     height: 100%;
     margin: 0;
     font-family: 'Fredoka', sans-serif;
-    background: url('https://www.transparenttextures.com/patterns/hexellence.png');
-    background-color: #FFF8DC;
+    background-color: #fdfaf4;
+    background-image: url('https://www.transparenttextures.com/patterns/hexellence.png');
     color: #212121;
 }
 
@@ -18,8 +18,8 @@ html, body {
 }
 
 footer {
-    background: #FFD700;
-    color: #212121;
+    background: #fff3cd;
+    color: #5c5c5c;
     padding: 10px 0;
     text-align: center;
     font-weight: bold;
@@ -27,22 +27,31 @@ footer {
 }
 
 .navbar {
-    background-color: #212121 !important;
-    border-bottom: 3px solid #FFD700;
+    background-color: #fff8e1 !important;
+    border-bottom: 2px solid #f5c542;
+}
+
+.navbar .navbar-brand {
+    color: #333;
+    font-weight: 600;
+}
+
+.navbar .text-white {
+    color: #333 !important;
 }
 
 .btn-primary, .btn-success, .btn-secondary {
-    background-color: #FFD700;
-    border-color: #FFD700;
-    color: #212121;
+    background-color: #f5c542;
+    border-color: #f5c542;
+    color: #333;
     font-weight: bold;
     border-radius: 12px;
     transition: all 0.3s ease;
 }
 
 .btn-primary:hover, .btn-success:hover, .btn-secondary:hover {
-    background-color: #FFC107;
-    border-color: #FFC107;
+    background-color: #f0b800;
+    border-color: #f0b800;
     color: #000;
 }
 
