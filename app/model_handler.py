@@ -6,7 +6,7 @@ from app import app
 from IA_model.images_modifications import image_modification
 
 # Load the model once
-MODEL_PATH = os.path.join("IA_model","models", "best_bright.h5")
+MODEL_PATH = os.path.join("IA_model","models", "best_original.h5")
 model = tf.keras.models.load_model(MODEL_PATH)
 
 def prepare_image(filepath):
