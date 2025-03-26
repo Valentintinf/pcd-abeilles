@@ -24,6 +24,18 @@ class User(UserMixin, db.Model):
     def __repr__(self):
         return f'<User {self.username}>'
     
+class BeeImage(db.Model):
+    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    image_name: so.Mapped[str] = so.mapped_column(sa.String(255), unique=True, nullable=False)
+    image_data: so.Mapped[bytes] = so.mapped_column(sa.LargeBinary, nullable=False)
+    has_varroa: so.Mapped[bool] = so.mapped_column(nullable=False)
+
+class NewBeeImage(db.Model):
+    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    image_name: so.Mapped[str] = so.mapped_column(sa.String(255), unique=True, nullable=False)
+    image_data: so.Mapped[bytes] = so.mapped_column(sa.LargeBinary, nullable=False)
+    has_varroa: so.Mapped[bool] = so.mapped_column(nullable=False)
+
 @login.user_loader
 def load_user(id):
     return db.session .get(User, int(id))

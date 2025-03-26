@@ -30,8 +30,14 @@
             {% block content %}{% endblock %}
         </div>
 
-        <footer class="mt-auto">
-            &copy; 2025 Détection de Varroa 🐝
+        <footer class="mt-auto py-2">
+            <div class="container d-flex justify-content-between align-items-center">
+                <div>
+                    <a href="{{ url_for('bee_gallery') }}" class="btn btn-secondary">Voir la galerie des abeilles</a>
+                </div>
+                <div class="text-center flex-fill">&copy; 2025 Détection de Varroa</div>
+                <div style="width: 145px;"></div>
+            </div>
         </footer>
     </div>
 </body>

@@ -8,7 +8,59 @@ from app.forms import LoginForm, RegistrationForm
 from app.models import User
 from app.utils import allowed_file
 from app.model_handler import predict_image
+import requests
+from flask import send_file
+import io
+from app.models import BeeImage, NewBeeImage
 
+
+
+@app.route("/image/<int:image_id>")
+def get_image(image_id):
+    bee = BeeImage.query.get_or_404(image_id)
+    return send_file(io.BytesIO(bee.image_data), mimetype='image/png')
+
+@app.route("/bee-gallery")
+def bee_gallery():
+    page = request.args.get('page', 1, type=int)
+    per_page = 20
+    filter_val = request.args.get('filter', 'all')
+
+    query = BeeImage.query
+    if filter_val == 'yes':
+        query = query.filter_by(has_varroa=True)
+    elif filter_val == 'no':
+        query = query.filter_by(has_varroa=False)
+
+    pagination = query.paginate(page=page, per_page=per_page)
+    return render_template("gallery.html", bees=pagination.items, pagination=pagination)
+
+@app.route("/new-bee-gallery")
+def new_bee_gallery():
+    new_bees = NewBeeImage.query.all()
+    return render_template("new_gallery.html", bees=new_bees)
+
+
+@app.route("/add-to-new-images/<int:image_id>", methods=["POST"])
+def add_to_new_images(image_id):
+    bee = BeeImage.query.get_or_404(image_id)
+
+    # Prevent duplicates
+    existing = NewBeeImage.query.filter_by(image_name=bee.image_name).first()
+    if existing:
+        flash("Cette image est déjà dans les nouvelles images.", "warning")
+        return redirect(url_for("bee_gallery"))
+
+    new_bee = NewBeeImage(
+        image_name=bee.image_name,
+        image_data=bee.image_data,
+        has_varroa=bee.has_varroa
+    )
+    db.session.add(new_bee)
+    db.session.commit()
+
+    flash("Image ajoutée au dataset pour entraînement.", "success")
+    return redirect(url_for("bee_gallery"))
 
 @app.route('/', methods=['GET', 'POST'])
 def root():
@@ -67,7 +119,7 @@ def index():
 
         if 'file' not in request.files:
             print("❌ No file in request.files")
-            flash('error: Aucun fichier sélectionné')
+            flash('Aucun fichier sélectionné', 'error')
             return redirect(url_for('index'))
 
         file = request.files['file']
@@ -75,28 +127,49 @@ def index():
 
         if file.filename == '':
             print("❌ Empty filename")
-            flash('error: Aucun fichier sélectionné')
+            flash('Aucun fichier sélectionné', 'error')
             return redirect(url_for('index'))
 
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            print("✅ Allowed file:", filename)
+            file_bytes = file.read()
+            print("💾 File loaded in memory")
 
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-            print("📁 Will save to:", filepath)
+            try:
+                response = requests.post(
+                    'http://localhost:8000/predict',
+                    files={'file': (filename, file_bytes, file.content_type)}
+                )
+                print("🌐 Sent to FastAPI")
 
-            file.save(filepath)
-            print("💾 File saved!")
+                if response.status_code == 200:
+                    result = response.json()
+                    print("🧠 Prediction:", result)
 
-            result = predict_image(filepath)
-            print("🧠 Prediction:", result)
+                    # Store in NewBeeImage
+                    new_image = NewBeeImage(
+                        image_name=filename,
+                        image_data=file_bytes,
+                        has_varroa=bool(result.get("class") == 1)
+                    )
+                    db.session.add(new_image)
+                    db.session.commit()
 
-            return render_template('result.html', filename=filename, result=result)
+                    return render_template('result.html', filename=filename, result=result)
+                else:
+                    print("❌ FastAPI error:", response.text)
+                    flash('Erreur de prédiction : ' + response.json().get('detail', 'Erreur inconnue'), 'error')
+            except Exception as e:
+                print("🚨 Exception in FastAPI call:", str(e))
+                flash(f"Erreur lors de l'appel à l'API : {str(e)}", 'error')
+
+            return redirect(url_for('index'))
 
         print("❌ File not allowed:", file.filename)
-        flash("error: Format non autorisé")
+        flash("Format non autorisé", 'error')
         return redirect(url_for('index'))
+
+    return render_template('index.html')
 
 
     return render_template('index.html')
