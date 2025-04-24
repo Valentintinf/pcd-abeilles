@@ -8,7 +8,3 @@ on:
     branches:
     - main
     - feature/*
-  jobs:
-   my_job:
-     name: deploy to staging
-     runs-on: ubuntu-22.04
