@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="text-center mt-4">Validation humaine des images</h2>
+<div class="row">
+    {% for img in images %}
+    <div class="col-md-3 text-center mt-3">
+        <div class="card h-100">
+            <div class="d-flex justify-content-center align-items-center" style="height: 220px; overflow: hidden;">
+                <img src="{{ url_for('get_new_image', image_id=img.id) }}" class="img-fluid" alt="{{ img.image_name }}" style="max-height: 100%; max-width: 100%; object-fit: contain;">
+            </div>
+            <div class="card-body">
+                <p class="card-text">{{ img.image_name }}</p>
+                <form method="post" action="{{ url_for('validate_image', image_id=img.id, has_varroa=1) }}">
+                    <button type="submit" class="btn btn-success btn-sm">✅ Varroa</button>
+                </form>
+                <form method="post" action="{{ url_for('validate_image', image_id=img.id, has_varroa=0) }}">
+                    <button type="submit" class="btn btn-danger btn-sm mt-1">🚫 Pas Varroa</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    <div class="text-end mb-4">
+        <a href="{{ url_for('merge_validated_images_view') }}" 
+           class="btn btn-outline-primary"
+           onclick="return confirm('⚠️ Cette action va déplacer les images validées vers la base principale. Continuer ?');">
+            Fusionner les images validées
+        </a>
+    </div>
+</div>
+{% endblock %}

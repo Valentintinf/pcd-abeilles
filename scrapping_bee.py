@@ -192,4 +192,4 @@ async def scrape_google_images(search_query="macbook m3", max_images=None, timeo
         await browser.close()  # Close the browser when done
 
 # Run the main function with specified query and limits
-asyncio.run(scrape_google_images(search_query="bee insect with and without varroa", max_images=10, timeout_duration=10))
+asyncio.run(scrape_google_images(search_query="bee insect", max_images=10, timeout_duration=10))
