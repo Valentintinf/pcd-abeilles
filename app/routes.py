@@ -12,15 +12,19 @@ import requests
 from flask import send_file
 import io
 from app.models import BeeImage, NewBeeImage
+import uuid
 
 
 
 @app.route("/image/<int:image_id>")
+@login_required
 def get_image(image_id):
     bee = BeeImage.query.get_or_404(image_id)
     return send_file(io.BytesIO(bee.image_data), mimetype='image/png')
 
+
 @app.route("/bee-gallery")
+@login_required
 def bee_gallery():
     page = request.args.get('page', 1, type=int)
     per_page = 20
@@ -35,13 +39,28 @@ def bee_gallery():
     pagination = query.paginate(page=page, per_page=per_page)
     return render_template("gallery.html", bees=pagination.items, pagination=pagination)
 
+
 @app.route("/new-bee-gallery")
+@login_required
 def new_bee_gallery():
     new_bees = NewBeeImage.query.all()
     return render_template("new_gallery.html", bees=new_bees)
 
 
+@app.route("/new-image-by-name/<string:image_name>")
+def get_new_image_by_name(image_name):
+    bee = NewBeeImage.query.filter_by(image_name=image_name).first_or_404()
+    return send_file(io.BytesIO(bee.image_data), mimetype='image/png')
+
+
+@app.route("/new-image/<int:image_id>")
+def get_new_image(image_id):
+    bee = NewBeeImage.query.get_or_404(image_id)
+    return send_file(io.BytesIO(bee.image_data), mimetype='image/png')
+
+
 @app.route("/add-to-new-images/<int:image_id>", methods=["POST"])
+@login_required
 def add_to_new_images(image_id):
     bee = BeeImage.query.get_or_404(image_id)
 
@@ -61,6 +80,49 @@ def add_to_new_images(image_id):
 
     flash("Image ajoutée au dataset pour entraînement.", "success")
     return redirect(url_for("bee_gallery"))
+
+
+@app.route("/validate-images")
+@login_required
+def validate_images():
+    images = NewBeeImage.query.filter_by(is_validated=False).all()
+    return render_template("validate.html", images=images)
+
+
+@app.route("/validate-image/<int:image_id>", methods=["POST"])
+@login_required
+def validate_image(image_id):
+    has_varroa = request.args.get("has_varroa") == "1"
+    bee = NewBeeImage.query.get_or_404(image_id)
+    bee.is_validated = True
+    bee.validated_has_varroa = has_varroa
+    db.session.commit()
+    flash("Image validée avec succès !", "success")
+    return redirect(url_for("validate_images"))
+
+@app.route("/merge-validated-images")
+@login_required
+def merge_validated_images_view():
+    from app.models import BeeImage, NewBeeImage
+
+    validated = NewBeeImage.query.filter_by(is_validated=True).filter(NewBeeImage.validated_has_varroa != None).all()
+    added = 0
+
+    for img in validated:
+        if not BeeImage.query.filter_by(image_name=img.image_name).first():
+            bee = BeeImage(
+                image_name=img.image_name,
+                image_data=img.image_data,
+                has_varroa=img.validated_has_varroa
+            )
+            db.session.add(bee)
+            added += 1
+        db.session.delete(img)
+
+    db.session.commit()
+    flash(f"{added} image(s) transférée(s) avec succès dans BeeImage.", "success")
+    return redirect(url_for('validate_images'))
+
 
 @app.route('/', methods=['GET', 'POST'])
 def root():
@@ -131,7 +193,9 @@ def index():
             return redirect(url_for('index'))
 
         if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
+            unique_id = uuid.uuid4().hex
+            filename = f"{unique_id}_{secure_filename(file.filename)}"
+
             file_bytes = file.read()
             print("💾 File loaded in memory")
 
