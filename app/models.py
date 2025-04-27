@@ -38,5 +38,10 @@ class NewBeeImage(db.Model):
     validated_has_varroa: so.Mapped[Optional[bool]] = so.mapped_column(nullable=True)
 
 @login.user_loader
-def load_user(id):
-    return db.session.get(User, int(id))
+def load_user(user_id):
+    if not user_id or user_id == "None":
+        return None
+    try:
+        return db.session.get(User, int(user_id))
+    except (ValueError, TypeError):
+        return None

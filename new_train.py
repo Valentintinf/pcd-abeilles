@@ -8,6 +8,7 @@ from app import app, db
 from app.models import BeeImage
 from sklearn.utils.class_weight import compute_class_weight
 from sklearn.metrics import classification_report
+from IA_model.images_modifications import image_modification
 
 
 
@@ -38,7 +39,7 @@ def train_model():
     if os.path.exists(MODEL_PATH):
         print("📂 Chargement du modèle existant")
         model = keras.models.load_model(MODEL_PATH)
-        model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+        model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['binary_accuracy'])
     else:
         print("✨ Création d'un nouveau modèle")
         model = keras.models.Sequential([
@@ -49,7 +50,7 @@ def train_model():
             keras.layers.Dense(64, activation='relu'),
             keras.layers.Dense(1, activation='sigmoid')
         ])
-        model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+        model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['binary_accuracy'])
 
     model.fit(X_train, y_train, epochs=10, validation_data=(X_val, y_val), class_weight=class_weights)
     model.save(MODEL_PATH)

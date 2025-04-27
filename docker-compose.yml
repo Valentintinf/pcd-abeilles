@@ -1,0 +1,30 @@
+version: "3.8"
+
+services:
+  flask-app:
+    build: .
+    ports:
+      - "5000:5000"
+    command: flask run --host=0.0.0.0 --port=5000
+    environment:
+      - FLASK_APP=main.py
+      - FLASK_ENV=development
+    depends_on:
+      - db-api
+      - api-model
+
+  api-model:
+    build: .
+    ports:
+      - "8000:8000"
+    command: uvicorn api_model:app --host=0.0.0.0 --port=8000
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  db-api:
+    build: .
+    ports:
+      - "8001:8001"
+    command: uvicorn db_api:app --host=0.0.0.0 --port=8001
+    environment:
+      - PYTHONUNBUFFERED=1
