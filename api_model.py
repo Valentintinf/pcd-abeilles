@@ -29,7 +29,7 @@ async def predict(file: UploadFile = File(...)):
         predicted_class = int(np.argmax(predictions, axis=1)[0])
         confidence = float(np.max(predictions))
 
-        return JSONResponse(content={"class": predicted_class, "confidence": confidence})
+        return JSONResponse(content={"prediction": predicted_class, "confidence": confidence})
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
