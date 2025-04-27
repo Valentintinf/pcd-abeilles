@@ -60,6 +60,10 @@ jobs:
     - name: Test Predict API Model with Image from DB
       run: python tests/test_predict_from_db.py
 
+  - name: Check if app.db exists
+  run: |
+    docker exec $(docker ps -qf "name=db-api") ls -l /app/app.db
+
     - name: Run Pytest
       run: pytest tests/
 
