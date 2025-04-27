@@ -68,10 +68,10 @@ jobs:
         done
 
     - name: Test Predict API Model with Image from DB
-      run: |
-        python tests/test_predict_from_db.py
-        docker logs $(docker ps -aqf "name=db-api") || true
-        done
+      run: python tests/test_predict_from_db.py
+     
+    - name: Dump logs db-api after predict fail
+      run: docker logs $(docker ps -qf "name=db-api")
 
     - name: Run Pytest
       run: pytest tests/
