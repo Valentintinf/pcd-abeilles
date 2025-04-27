@@ -42,9 +42,9 @@ jobs:
     - name: Check if app.db exists
       run: docker exec $(docker ps -qf "name=db-api") ls -l /app/app.db
 
-    - name: Check tables inside app.db (verify bee_image exists)
-      run: docker exec $(docker ps -qf "name=db-api") sqlite3 /app/app.db ".tables"
-
+    - name: Check bee_image table in app.db
+      run: python tests/check_bee_image.py
+   
     - name: Show Docker logs
       run: docker logs $(docker ps -aqf "name=flask-app") || true
    
