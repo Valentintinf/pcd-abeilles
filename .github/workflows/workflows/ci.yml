@@ -1,0 +1,39 @@
+name: CI/CD Docker Build and Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build and Start Docker Compose
+      run: |
+        docker-compose up -d
+        echo "Waiting for services to be ready..."
+        sleep 15
+
+    - name: Health Check Flask
+      run: curl --fail http://localhost:5000 || exit 1
+
+    - name: Health Check API Model
+      run: curl --fail http://localhost:8000/docs || exit 1
+
+    - name: Health Check DB API
+      run: curl --fail http://localhost:8001/docs || exit 1
+
+    - name: Run Pytest
+      run: pytest tests/
+
+    - name: Cleanup containers
+      run: docker-compose down

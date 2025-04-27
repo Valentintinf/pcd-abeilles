@@ -12,6 +12,7 @@ app = FastAPI()
 
 MODEL_PATH = os.path.join("IA_model", "models", "retrained_model.h5")
 model = load_model(MODEL_PATH)
+model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
