@@ -62,6 +62,9 @@ jobs:
     - name: Health Check DB API
       run: curl --fail http://localhost:8001/docs || exit 1
 
+    - name: Test Predict API Model with Image from DB
+      run: python tests/test_predict_from_db.py
+
     - name: Run Pytest
       run: pytest tests/
 
