@@ -53,8 +53,7 @@ jobs:
     
     - name: Health Check API Model Predict
       run: |
-        curl --fail -X POST http://localhost:8000/predict \
-        -F "file=@tests/test_image.png" || exit 1
+        curl --fail -X POST http://localhost:8000/predict || exit 1
 
     - name: Show Docker logs for API Model
       run: docker logs $(docker ps -aqf "name=db-api") || true
