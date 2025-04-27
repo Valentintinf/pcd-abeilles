@@ -69,7 +69,7 @@ jobs:
 
     - name: Test Predict API Model with Image from DB
       run: | 
-        python tests/test_predict_from_db.py || True
+        python tests/test_predict_from_db.py || true
      
     - name: Dump logs db-api after predict fail
       run: docker logs $(docker ps -qf "name=db-api")
