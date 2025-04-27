@@ -21,7 +21,6 @@ def extract_domain(url):
     domain = urlparse(url).netloc
     if domain.startswith("www."):
         domain = domain[4:]
-    return domain
 
 # Function to download an image with retry logic
 async def download_image(session, img_url, file_path, retries=3):
