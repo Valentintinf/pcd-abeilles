@@ -26,6 +26,19 @@ class BeeImageSchema(BaseModel):
 
 # --- Endpoints ---
 
+@app.get("/images/", response_model=list[BeeImageSchema])
+def list_validated_images():
+    session = SessionLocal()
+    images = session.query(BeeImage).all()
+    session.close()
+    return [
+        BeeImageSchema(
+            filename=img.filename,
+            label=img.label,
+            data=img.data
+        ) for img in images
+    ]
+
 @app.get("/images/{image_id}", response_model=BeeImageSchema)
 def get_validated_image(image_id: int):
     session = SessionLocal()
@@ -33,7 +46,24 @@ def get_validated_image(image_id: int):
     session.close()
     if image is None:
         raise HTTPException(status_code=404, detail="Image not found")
-    return jsonable_encoder(image)
+    return BeeImageSchema(
+        filename=image.filename,
+        label=image.label,
+        data=image.data
+    )
+
+@app.get("/images/pending/", response_model=list[BeeImageSchema])
+def list_pending_images():
+    session = SessionLocal()
+    images = session.query(NewBeeImage).all()
+    session.close()
+    return [
+        BeeImageSchema(
+            filename=img.filename,
+            label=img.label,
+            data=img.data
+        ) for img in images
+    ]
 
 @app.get("/images/pending/{image_id}", response_model=BeeImageSchema)
 def get_pending_image(image_id: int):
@@ -42,21 +72,11 @@ def get_pending_image(image_id: int):
     session.close()
     if image is None:
         raise HTTPException(status_code=404, detail="Pending image not found")
-    return jsonable_encoder(image)
-
-@app.get("/images/", response_model=list[BeeImageSchema])
-def list_validated_images():
-    session = SessionLocal()
-    images = session.query(BeeImage).all()
-    session.close()
-    return jsonable_encoder(images)
-
-@app.get("/images/pending/", response_model=list[BeeImageSchema])
-def list_pending_images():
-    session = SessionLocal()
-    images = session.query(NewBeeImage).all()
-    session.close()
-    return jsonable_encoder(images)
+    return BeeImageSchema(
+        filename=image.filename,
+        label=image.label,
+        data=image.data
+    )
 
 @app.post("/images/")
 def add_validated_image(image: BeeImageSchema):
