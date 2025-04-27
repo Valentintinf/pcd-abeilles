@@ -37,10 +37,12 @@ jobs:
       run: |
         docker-compose up -d
         echo "Waiting for services to be ready..."
-        sleep 15
-
+        sleep 30
+    - name: Show Docker logs
+      run: docker logs $(docker ps -qf "name=flask-app") || true
+   
     - name: Health Check Flask
-      run: curl --fail http://localhost:5000 || exit 1
+      run: curl --fail  http://localhost:5000 || exit 1
 
     - name: Health Check API Model
       run: curl --fail http://localhost:8000/docs || exit 1
