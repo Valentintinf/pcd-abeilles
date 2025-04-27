@@ -63,6 +63,13 @@ jobs:
     - name: Health Check DB API
       run: curl --fail http://localhost:8001/docs || exit 1
 
+    - name: Wait for db-api to be ready
+      run: |
+    for i in {1..10}; do
+      echo "⌛ Waiting for db-api..."
+      curl --fail http://localhost:8001/images/ && break || sleep 5
+    done
+
     - name: Test Predict API Model with Image from DB
       run: python tests/test_predict_from_db.py
 
