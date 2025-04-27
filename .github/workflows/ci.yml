@@ -57,9 +57,6 @@ jobs:
     - name: Health Check API Model
       run: curl --fail http://localhost:8000/docs || exit 1
 
-    - name: Show Docker logs for API Model
-      run: docker logs $(docker ps -aqf "name=db-api") || true
-
     - name: Health Check DB API
       run: curl --fail http://localhost:8001/docs || exit 1
 
@@ -72,6 +69,9 @@ jobs:
 
     - name: Test Predict API Model with Image from DB
       run: python tests/test_predict_from_db.py
+
+    - name: Show Docker logs for API db
+      run: docker logs $(docker ps -aqf "name=db-api") || true
 
     - name: Run Pytest
       run: pytest tests/
