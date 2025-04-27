@@ -68,7 +68,7 @@ jobs:
         for i in {1..10}; do
         echo "⌛ Waiting for db-api..."
         curl --fail http://localhost:8001/images/ && break || sleep 5
-      done
+        done
 
     - name: Test Predict API Model with Image from DB
       run: python tests/test_predict_from_db.py
