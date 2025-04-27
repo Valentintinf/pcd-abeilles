@@ -37,7 +37,10 @@ jobs:
       run: |
         docker-compose up -d
         echo "Waiting for services to be ready..."
-        sleep 30
+        sleep 20
+
+    - name: Check if app.db exists
+      run: docker exec $(docker ps -qf "name=db-api") ls -l /app/app.db
 
     - name: Show Docker logs
       run: docker logs $(docker ps -aqf "name=flask-app") || true
@@ -59,9 +62,6 @@ jobs:
 
     - name: Test Predict API Model with Image from DB
       run: python tests/test_predict_from_db.py
-
-    - name: Check if app.db exists
-      run: docker exec $(docker ps -qf "name=db-api") ls -l /app/app.db
 
     - name: Run Pytest
       run: pytest tests/
