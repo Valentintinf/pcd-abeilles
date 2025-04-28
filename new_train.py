@@ -20,8 +20,12 @@ def load_images():
         X, y = [], []
         for entry in data:
             img = Image.open(io.BytesIO(entry.image_data)).convert("RGB")
-            img = img.resize((50, 54))
-            X.append(np.array(img))
+            img = np.array(img)
+
+            transformer = image_modification([img])
+            processed_img = transformer.transform()
+
+            X.append(processed_img[0])  # car transform() retourne une liste/array
             y.append(1 if entry.has_varroa else 0)
         return np.array(X), np.array(y)
 
