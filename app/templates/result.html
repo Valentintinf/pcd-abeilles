@@ -7,7 +7,7 @@
     <h2>Résultat de la détection</h2>
 
     <!-- Affichage de l'image depuis la base -->
-    <img src="{{ url_for('get_new_image_by_name', image_name=filename) }}"
+    <img src="{{ url_for('get_new_image', image_id=img.id) }}"
          class="img-fluid mt-3"
          alt="Image analysée"
          style="max-height: 400px; object-fit: contain;">
