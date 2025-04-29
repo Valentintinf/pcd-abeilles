@@ -22,6 +22,7 @@ instrumentator = Instrumentator().instrument(app).expose(app)
 
 # Pydantic Schemas
 class BeeImageSchema(BaseModel):
+    id: int 
     filename: str
     label: str
     data: str  # Base64 encoded image data
@@ -47,6 +48,7 @@ def list_validated_images():
     session.close()
     return [
         BeeImageSchema(
+            id=img.id,
             filename=img.image_name,
             label=str(img.has_varroa),
             data=base64.b64encode(img.image_data).decode('utf-8')
@@ -61,6 +63,7 @@ def get_validated_image(image_id: int):
     if image is None:
         raise HTTPException(status_code=404, detail="Image not found")
     return BeeImageSchema(
+        id=image.id,
         filename=image.image_name,
         label=str(image.has_varroa),
         data=base64.b64encode(image.image_data).decode('utf-8')
@@ -73,6 +76,7 @@ def list_pending_images():
     session.close()
     return [
         BeeImageSchema(
+            id=img.id,
             filename=img.image_name,
             label=str(img.has_varroa),
             data=base64.b64encode(img.image_data).decode('utf-8')
