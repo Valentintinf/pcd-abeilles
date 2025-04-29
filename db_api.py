@@ -5,6 +5,8 @@ from sqlalchemy.orm import sessionmaker
 from app.models import BeeImage, NewBeeImage, User
 import os
 import uvicorn
+from fastapi.encoders import jsonable_encoder
+from prometheus_fastapi_instrumentator import Instrumentator
 import base64
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -15,6 +17,8 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # FastAPI app
 app = FastAPI()
+instrumentator = Instrumentator().instrument(app).expose(app)
+
 
 # Pydantic Schemas
 class BeeImageSchema(BaseModel):

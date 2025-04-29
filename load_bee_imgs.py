@@ -23,6 +23,7 @@ def load_images_to_db():
             bee = BeeImage.query.filter_by(image_name=row['file']).first()
             if bee is None:
                 bee = BeeImage(
+                    id=int,
                     image_name=row['file'],
                     image_data=image_data,
                     has_varroa=has_varroa
