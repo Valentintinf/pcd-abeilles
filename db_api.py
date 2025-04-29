@@ -7,7 +7,8 @@ import os
 import uvicorn
 from fastapi.encoders import jsonable_encoder
 from prometheus_fastapi_instrumentator import Instrumentator
-
+import base64
+from werkzeug.security import generate_password_hash, check_password_hash
 
 # Configuration Database
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///app.db")
@@ -28,7 +29,29 @@ class BeeImageSchema(BaseModel):
     class Config:
         from_attributes = True
 
+class UserSchema(BaseModel):
+    username: str
+    email: str
+    password: str
+
+class LoginSchema(BaseModel):
+    username: str
+    password: str
+
 # --- Endpoints ---
+
+@app.get("/images/", response_model=list[BeeImageSchema])
+def list_validated_images():
+    session = SessionLocal()
+    images = session.query(BeeImage).all()
+    session.close()
+    return [
+        BeeImageSchema(
+            filename=img.image_name,
+            label=str(img.has_varroa),
+            data=base64.b64encode(img.image_data).decode('utf-8')
+        ) for img in images
+    ]
 
 @app.get("/images/{image_id}", response_model=BeeImageSchema)
 def get_validated_image(image_id: int):
@@ -37,7 +60,24 @@ def get_validated_image(image_id: int):
     session.close()
     if image is None:
         raise HTTPException(status_code=404, detail="Image not found")
-    return jsonable_encoder(image)
+    return BeeImageSchema(
+        filename=image.image_name,
+        label=str(image.has_varroa),
+        data=base64.b64encode(image.image_data).decode('utf-8')
+    )
+
+@app.get("/images/pending/", response_model=list[BeeImageSchema])
+def list_pending_images():
+    session = SessionLocal()
+    images = session.query(NewBeeImage).all()
+    session.close()
+    return [
+        BeeImageSchema(
+            filename=img.image_name,
+            label=str(img.has_varroa),
+            data=base64.b64encode(img.image_data).decode('utf-8')
+        ) for img in images
+    ]
 
 @app.get("/images/pending/{image_id}", response_model=BeeImageSchema)
 def get_pending_image(image_id: int):
@@ -46,26 +86,20 @@ def get_pending_image(image_id: int):
     session.close()
     if image is None:
         raise HTTPException(status_code=404, detail="Pending image not found")
-    return jsonable_encoder(image)
-
-@app.get("/images/", response_model=list[BeeImageSchema])
-def list_validated_images():
-    session = SessionLocal()
-    images = session.query(BeeImage).all()
-    session.close()
-    return jsonable_encoder(images)
-
-@app.get("/images/pending/", response_model=list[BeeImageSchema])
-def list_pending_images():
-    session = SessionLocal()
-    images = session.query(NewBeeImage).all()
-    session.close()
-    return jsonable_encoder(images)
+    return BeeImageSchema(
+        filename=image.image_name,
+        label=str(image.has_varroa),
+        data=base64.b64encode(image.image_data).decode('utf-8')
+    )
 
 @app.post("/images/")
 def add_validated_image(image: BeeImageSchema):
     session = SessionLocal()
-    new_img = BeeImage(filename=image.filename, label=image.label, data=image.data)
+    new_img = BeeImage(
+        image_name=image.filename,
+        has_varroa=image.label.lower() == "true",
+        image_data=base64.b64decode(image.data)
+    )
     session.add(new_img)
     session.commit()
     session.close()
@@ -74,7 +108,11 @@ def add_validated_image(image: BeeImageSchema):
 @app.post("/images/pending/")
 def add_pending_image(image: BeeImageSchema):
     session = SessionLocal()
-    new_img = NewBeeImage(filename=image.filename, label=image.label, data=image.data)
+    new_img = NewBeeImage(
+        image_name=image.filename,
+        has_varroa=image.label.lower() == "true",
+        image_data=base64.b64decode(image.data)
+    )
     session.add(new_img)
     session.commit()
     session.close()
@@ -117,12 +155,6 @@ def delete_pending_image(image_id: int):
     session.commit()
     session.close()
     return {"status": "Pending image deleted"}
-from werkzeug.security import generate_password_hash, check_password_hash
-
-class UserSchema(BaseModel):
-    username: str
-    email: str
-    password: str
 
 @app.post("/users/register")
 def register_user(user: UserSchema):
@@ -143,10 +175,6 @@ def register_user(user: UserSchema):
     session.close()
     return {"status": "User registered"}
 
-class LoginSchema(BaseModel):
-    username: str
-    password: str
-
 @app.post("/users/login")
 def login_user_api(user: LoginSchema):
     session = SessionLocal()
@@ -162,7 +190,6 @@ def login_user_api(user: LoginSchema):
             "email": existing_user.email
         }
     }
-
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8001)
