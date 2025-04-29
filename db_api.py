@@ -6,6 +6,8 @@ from app.models import BeeImage, NewBeeImage, User
 import os
 import uvicorn
 from fastapi.encoders import jsonable_encoder
+from prometheus_fastapi_instrumentator import Instrumentator
+
 
 # Configuration Database
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///app.db")
@@ -14,6 +16,8 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # FastAPI app
 app = FastAPI()
+instrumentator = Instrumentator().instrument(app).expose(app)
+
 
 # Pydantic Schemas
 class BeeImageSchema(BaseModel):

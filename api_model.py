@@ -7,8 +7,12 @@ import uvicorn
 import os
 import io
 from IA_model.images_modifications import image_modification
+from prometheus_fastapi_instrumentator import Instrumentator
+
 
 app = FastAPI()
+instrumentator = Instrumentator().instrument(app).expose(app)
+
 
 MODEL_PATH = os.path.join("IA_model", "models", "retrained_model.h5")
 model = load_model(MODEL_PATH)
